@@ -129,8 +129,10 @@ void setWindowSize(int width, int height)
     glfwSetWindowSize(g_window, width, height);
 }
 
-int init()
+int init(int width, int height, double scale)
 {
+    width *= scale;
+    height *= scale;
     if (!glfwInit()) {
         fprintf(stderr, "Failed to initialize GLFW\n");
         return 1;
@@ -141,7 +143,7 @@ int init()
         GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
 
     // Open a window and create its OpenGL context
-    g_window = glfwCreateWindow(640, 480, "The Mayor", NULL, NULL);
+    g_window = glfwCreateWindow(width, height, "The Mayor", NULL, NULL);
     if (g_window == NULL) {
         fprintf(stderr, "Failed to open GLFW window.\n");
         glfwTerminate();
@@ -165,8 +167,12 @@ int init()
     // Setup style
     // ImGui::StyleColorsDark();
     ImGui::StyleColorsClassic();
+    // if (scale != 1.0f)
+    // {
+        ImGui::GetStyle().ScaleAllSizes(scale);
+    // }
 
-    io.Fonts->AddFontFromFileTTF("data/Roboto-Regular.ttf", 13.0f);
+    io.Fonts->AddFontFromFileTTF("data/Roboto-Regular.ttf", scale * 13.0f);
     io.Fonts->AddFontDefault();
 
     imgui = ImGui::GetCurrentContext();
@@ -216,10 +222,10 @@ EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *uiEvent, void *u
         // Set the canvas render size, factoring in window.devicePixelRatio.
         // for (int i = 0; i < g_canvasCount; ++i) {
         //     const char *canvasId = g_canvasIds[i];
-            const char *canvasId = "canvas";
 
             double css_width;
             double css_height;
+            const char *canvasId = "canvas";
             emscripten_get_element_css_size(canvasId, &css_width, &css_height);
 
             // FIXME: the css size returned above might in fact be the canvas render
@@ -247,7 +253,7 @@ EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *uiEvent, void *u
         //     cout << "new size " << floor(pixel_width) << " " << floor(pixel_height) << endl;
             // qt_set_canvas_size(canvasId, pixel_width, pixel_height);
 
-            setWindowSize( (css_width), floor(css_height)  );
+            setWindowSize( (pixel_width), floor(pixel_height)  );
             draw();
         // }
 
@@ -263,7 +269,16 @@ int main(int argc, char** argv)
 {
 
 // #ifdef __EMSCRIPTEN__
-    if (init() != 0)
+            double css_width;
+            double css_height;
+                    double window_dpr = EM_ASM_DOUBLE({
+            return window.devicePixelRatio;
+        });
+
+            const char *canvasId = "canvas";
+            emscripten_get_element_css_size(canvasId, &css_width, &css_height);
+
+    if (init(floor(css_width), floor(css_height), window_dpr) != 0)
         return 1;
     void *data = nullptr;
     bool capture = true;
