@@ -29,6 +29,7 @@
 
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_freetype.h"
 //#include <GL/gl3w.h>    // This example is using gl3w to access OpenGL functions. You may freely use any other OpenGL loader such as: glew, glad, glLoadGen, etc.
 //#include <glew.h>
 #include <GLES3/gl3.h>
@@ -211,6 +212,8 @@ bool ImGui_ImplOpenGL3_CreateFontsTexture()
     ImGuiIO& io = ImGui::GetIO();
     unsigned char* pixels;
     int width, height;
+    unsigned int flags = ImGuiFreeType::LightHinting;
+    ImGuiFreeType::BuildFontAtlas(io.Fonts, flags);
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);   // Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
 
     // Upload texture to graphics system

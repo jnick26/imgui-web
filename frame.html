@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    Multipass
+  </title>
+
+  <style type="text/css">
+
+.emscripten {
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+    div {
+      margin: 0px;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    canvas {
+      margin: 0px;
+      width: 100%;      
+      min-height: 100vh;
+      border: 0px none;
+    background-color: black;
+    }
+
+    html {
+      margin: 0px;
+      width: 100%;
+      min-height: 100%;
+    }
+    body {
+      margin: 0px;
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+
+
+  <script>
+    function $(id) {
+      return document.getElementById(id)
+    }
+
+    function onload() {
+      var module = {}
+      module.canvas = $("canvas"); // can be omitted if native code does not
+      // use the default canvas
+      Module(module);
+    }
+
+  </script>
+</head>
+
+<body onload=onload()>
+  {{{ SCRIPT }}}
+
+  <div class="emscripten_border">
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+  </div>
+</body>
+
+</html>
+
